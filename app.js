@@ -13,22 +13,9 @@ const render = require("./lib/htmlRenderer");
 
 
 // Write code to use inquirer to gather information about the development team members,
-
-//Used to gather user input.
-const getHowManyEmployees = () => {
-    return inquirer.prompt([
-        {
-            type: "input",
-            name: "numemp",
-            message: "How many employees do you have?"
-        }
-    ]);
-}
-
-// name, id, title, email
-
-const collectEmployeeInfo = () => {
-    return inquirer.prompt([
+//Adapted from http://www.penandpaperprogrammer.com/blog/2018/12/16/repeating-questions-with-inquirerjs
+const collectEmployeeInfo = async (inputs = []) => {
+    const prompts = [
         {
             type: "input",
             name: "name",
@@ -48,9 +35,24 @@ const collectEmployeeInfo = () => {
             type: "input",
             name: "email",
             message: "What is the email?"
+        },
+        {
+            type: 'confirm',
+            name: 'again',
+            message: 'Enter another employee? ',
+            default: true
         }
-    ]);
-}
+    ];
+
+    const { again, ...answers } = await inquirer.prompt(prompts);
+    const newInputs = [...inputs, answers];
+    return again ? collectEmployeeInfo(newInputs) : newInputs;
+};
+
+const main = async () => {
+    const inputs = await collectEmployeeInfo();
+    // console.log(inputs);
+};
 // and to create objects for each team member (using the correct classes as blueprints!)
 
 
@@ -80,11 +82,11 @@ const collectEmployeeInfo = () => {
 async function init() {
 
     try {
-        const numemps = await getHowManyEmployees();
-        console.log(numemps)
+        // const numemps = await getHowManyEmployees();
+        // console.log(numemps)
 
 
-        const answers = await collectEmployeeInfo(numemps);
+        const answers = await collectEmployeeInfo();
 
 
 
